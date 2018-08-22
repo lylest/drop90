@@ -28,53 +28,46 @@ if (isset($_POST['submit'])) {
    		if ($fileSize < 900000000000 ) {
 
    			$fileNameNew = uniqid('',true).".". $fileActualExt;
-   			$fileDestination ='../uploads/products/'.$fileNameNew;
+   			$fileDestination ='../uploads/bussiness/'.$fileNameNew;
 
    		move_uploaded_file($fileTmpName, $fileDestination );
 
    		//DB
 
    		$owner = $_SESSION['u_first'];
+         //
+           $sql= "SELECT * FROM bussinessteam WHERE bussiness_owner='$owner' and member_face < 1;";
+            $results= mysqli_query($conn,$sql);
+            $resultsCheck= mysqli_num_rows($results);
+            if ($resultsCheck > 0) {
+              while($row = mysqli_fetch_assoc($results)){
+                $BusinessName = $row['bussiness_name'];
+                $BusinessOwner = $row['bussiness_owner'];
+                $MemberName = $row['member'];
+                $MemberPosition = $row['member_position'];
+                $MemberFace = $row['member_face'];
+                
 
-   		$sql = "SELECT * FROM products WHERE product_owner='$owner' and product_image < 1;";
-   		$results= mysqli_query($conn,$sql);
-   		$resultsCheck = mysqli_num_rows($results);
+              }
+            }
 
-   	   if ($resultsCheck > 0) {
-   	   	 while ($row = mysqli_fetch_assoc($results)) {
-   	   	 $productName = $row['product_name'];
-   	   	 $productPrice= $row['product_price'];
+         //
 
-   	   	 //image info
+   	
 
    	   	 $imageName = $fileNameNew;
+             $Imgstatus= 1;
 
-   	   $sql = "INSERT INTO productimages (image_owner, image_product, image_price, image_name) VALUES ('$owner', '$productName', '$productPrice', '$imageName');";
-   	   mysqli_query($conn,$sql);
-
-   	   //echo "success";
-   	   
-   	   // update products table and put 1 on 0
-
-   	   $sql = "UPDATE products SET product_image=1 WHERE product_name='$productName' and product_owner='$owner';";
-   	    mysqli_query($conn,$sql);
-   	   
-
-   	    //insert image name into products table
-   	$sql = "UPDATE products  SET product_img ='$imageName' WHERE product_name='$productName';";
-
-   	   mysqli_query($conn,$sql);
-          header("Location:../profile.php");
+            $sql = "UPDATE bussinessteam SET member_face='$imageName' WHERE member_face=0;";
+           mysqli_query($conn,$sql);     
+        header("Location:../bussiness.php");
 
    	    //
 
    	   // echo "successfull";
 
    	   	 	
-   	   	 }
-   	   
-   	   }
-
+   	   	 
 
 
 
